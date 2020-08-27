@@ -10,7 +10,10 @@
 
 ## Example command
 * Create new datasets with different missing rates or imputed value
-> python demo_data_imputation.py --from_id 0 --to_id 2 --review_missing_flag True --review_imputed_flag True
+```bash
+python demo_data_imputation.py --from_id 0 --to_id 2 --review_missing_flag True 
+--review_imputed_flag True
+```
 
 ## Imputation Methods
 Add many imputation methods about project. List of some imputation methods:
