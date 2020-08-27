@@ -1,4 +1,4 @@
-# Necessary packages
+#Necessary packages
 import sys
 sys.path.append("..")
 import datetime
@@ -6,7 +6,7 @@ import csv
 import numpy as np
 import os
 # from sklearn import model_selection, preprocessing
-# My Library
+#My Library
 from data_loader import data_loader
 from gain import gain
 

@@ -1,7 +1,5 @@
 '''Main function to prepare missing dataset'''
 
-
-
 # Necessary packages
 import os
 import sys
@@ -18,13 +16,7 @@ from util import csv_reader, write_file
 from data_processing import K_Fold_cross_validation, missing_data_generation
 from data_imputation import imputation_method
 from train import model_prediction
-'''Begin start code Python'''
-# try:
-#     from_id = int(sys.args[0])
-#     to_id = int(sys.args[1])
-# except:
-#     from_id = 0
-#     to_id = len(file_list)
+
 def main(args):
     '''Main function for prepare processing data
     
@@ -125,7 +117,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    
+
     # Call main function
     main(args)
 # '''Code Finished'''
