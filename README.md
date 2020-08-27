@@ -7,11 +7,10 @@
 * [Classification Algorithm](#classification-algorithm)
 
 ## Setup
-* ### Note: when running project configure setup 2 review flag is False
->review_flag = False 
 
->review_imputaion_flag = False
-
+## Example command
+* Create new datasets with different missing rates or imputed value
+> python demo_data_imputation.py --from_id 0 --to_id 2 --review_missing_flag True --review_imputed_flag True
 
 ## Imputation Methods
 Add many imputation methods about project. List of some imputation methods:
@@ -21,6 +20,7 @@ Add many imputation methods about project. List of some imputation methods:
 * SimpleImputer(strategy = "constant")
 * K-Nearest Neighbor Imputation
 * Multiple Imputation by Chained Equations(MICE)
+
 ## Classification Algorithm
 Some algorithms have been used to evaluate the accuracy of the methods imputed.
 * KNeighborsClassifier(n_neighbors=10)
