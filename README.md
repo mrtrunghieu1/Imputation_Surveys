@@ -1,5 +1,5 @@
 # Data-Imputation
->Imputation Methods for Missing Data and evaluate imputation methods via Sate of The Art algorithm classification (SOTA).
+>Imputation Methods for Missing Data and evaluate imputation methods via sate-of-the-art algorithm classification (SOTA).
 
 ## Table of contents
 * [Setup](#setup)
