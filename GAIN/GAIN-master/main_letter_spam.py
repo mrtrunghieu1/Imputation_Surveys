@@ -41,6 +41,7 @@ def main (args):
   # Load data and introduce missingness
   ori_data_x, miss_data_x, data_m = data_loader(data_name, miss_rate)
   print(miss_data_x)
+  
   # Impute missing data
   imputed_data_x = gain(miss_data_x, gain_parameters)
   
