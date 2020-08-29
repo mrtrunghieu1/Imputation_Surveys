@@ -6,6 +6,9 @@ import numpy as np
 from utils import binary_sampler
 from keras.datasets import mnist
 
+file_list = ['abalone', 'heart', 'tic-tac-toe']
+data_K_Fold = "C:\\Users\\Administrator\\Desktop\\Code_Test\\Research\\Data-Imputation-master\\data_K_Fold"
+imputed_dataset = "C:\\Users\\Administrator\\Desktop\\Code_Test\\Research\\Data-Imputation-master\\imputed_dataset"
 
 def data_loader (data_name, miss_rate):
   '''Loads datasets and introduce missingness.
