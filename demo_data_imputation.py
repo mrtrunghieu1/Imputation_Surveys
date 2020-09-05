@@ -10,6 +10,7 @@ from numpy import savetxt
 import csv
 import random
 import argparse
+from tqdm import tqdm
 # My packages
 from data_helper import file_list, data_folder, data_K_Fold, imputed_dataset
 from util import csv_reader, write_file
@@ -37,8 +38,8 @@ def main(args):
     # Parameters
     from_id = args.from_id 
     to_id = args.to_id
+    n_iterations = args.n_iterations
 
-    fold_size = 11
     random.seed(0)
     missingness_flag = [0, 10, 20, 30, 40, 50]  # t% missing data  
     binary_flag = [0,0,0,0,1,0]          # 1 activate imputation algorithm
@@ -58,18 +59,18 @@ def main(args):
             X_full = np.concatenate((D_train, D_val, D_test), axis = 0)
 
             # K-Fold Cross Validation approach first time
-            kf_1 = KFold(n_splits = 5, shuffle = True)
+            kf_1 = KFold(n_splits = n_iterations, shuffle = True)
             kf_1.split(X_full)
             # K-Fold Cross Validation approach second time
-            kf_2 = KFold(n_splits = 5, shuffle = True)
+            kf_2 = KFold(n_splits = n_iterations, shuffle = True)
             kf_2.split(X_full)
-            # Save file csv train(i)-test(i) i=<1,5>
+            # Save file csv train(i)-test(i) i=<1, iterations>
             K_Fold_cross_validation(kf_1, X_full, data_K_Fold, file_name, 0)
-            # Save file csv train(i)-test(i) i=<5,10>
-            K_Fold_cross_validation(kf_2, X_full, data_K_Fold, file_name, 5)
+            # Save file csv train(i)-test(i) i=<iterations, 2xiterations>
+            K_Fold_cross_validation(kf_2, X_full, data_K_Fold, file_name, n_iterations)
 
             # Loading data K-Fold 
-            for i in range(1, fold_size):
+            for i in tqdm(range(1, 2*n_iterations+1)):
                 (D_train, D_test) = csv_reader(data_K_Fold, file_name, i, method='original_data', missingness=None)
                 for missingness in missingness_flag:
                     D_train_missing = missing_data_generation(D_train, missingness)
@@ -79,7 +80,7 @@ def main(args):
 
         # Loading data processed and imputed dataset
         if review_imputed_flag:
-            for i in range(1, fold_size):
+            for i in tqdm(range(1, 2*n_iterations+1)):
                 for missingness in missingness_flag:
                     (D_missing_train, D_missing_test) = csv_reader(data_K_Fold, file_name, i, method='data_missing', missingness=missingness)
                     for imp_flag in imputation_flag:
@@ -101,6 +102,12 @@ if __name__ == "__main__":
         '--to_id',
         help='end index to file list',
         default=len(file_list),
+        type=int
+    )
+    parser.add_argument(
+        '--n_iterations',
+        help=' the number of splitting iterations in the cross-validator',
+        default=5,
         type=int
     )
     parser.add_argument(
