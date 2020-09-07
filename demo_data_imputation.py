@@ -39,7 +39,7 @@ def main(args):
     from_id = args.from_id 
     to_id = args.to_id
     n_iterations = args.n_iterations
-
+    fold_size = 2*args.n_iterations + 1 # The fold_size start from index 1 
     random.seed(0)
     missingness_flag = [0, 10, 20, 30, 40, 50]  # t% missing data  
     binary_flag = [0,0,0,0,1,0]          # 1 activate imputation algorithm
@@ -70,7 +70,7 @@ def main(args):
             K_Fold_cross_validation(kf_2, X_full, data_K_Fold, file_name, n_iterations)
 
             # Loading data K-Fold 
-            for i in tqdm(range(1, 2*n_iterations+1)):
+            for i in tqdm(range(1, fold_size)):
                 (D_train, D_test) = csv_reader(data_K_Fold, file_name, i, method='original_data', missingness=None)
                 for missingness in missingness_flag:
                     D_train_missing = missing_data_generation(D_train, missingness)
@@ -80,7 +80,7 @@ def main(args):
 
         # Loading data processed and imputed dataset
         if review_imputed_flag:
-            for i in tqdm(range(1, 2*n_iterations+1)):
+            for i in tqdm(range(1, fold_size)):
                 for missingness in missingness_flag:
                     (D_missing_train, D_missing_test) = csv_reader(data_K_Fold, file_name, i, method='data_missing', missingness=missingness)
                     for imp_flag in imputation_flag:
