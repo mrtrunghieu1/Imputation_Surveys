@@ -27,14 +27,15 @@ def K_Fold_cross_validation(kf, X_full, save_folder, file_name, count_fold):
         savetxt(train_path, X_train, delimiter=',')
         savetxt(test_path, X_test, delimiter=',')
 
-def missing_data_generation(data, missingness):
+def missing_data_generation(data_original, missingness):
+    data = np.copy(data_original)
+    missingness /= 100
     # Generate data from original data with missingness
     X_data = data[:, : (data.shape[1] - 1)]
     y_data = data[:, -1]
     y_data = y_data.reshape(1, data.shape[0])
     X_matrix = np.zeros((data.shape[0], data.shape[1]))
 
-    missingness /= 100
     missing_size = int(X_data.shape[0] * missingness)
     idx_sample = random.sample(range(X_data.shape[0]), missing_size)
     for i in idx_sample:
