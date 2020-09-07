@@ -42,7 +42,7 @@ def main(args):
     fold_size = 2*args.n_iterations + 1 # The fold_size start from index 1 
     random.seed(0)
     missingness_flag = [0, 10, 20, 30, 40, 50]  # t% missing data  
-    binary_flag = [0,0,0,0,1,0]          # 1 activate imputation algorithm
+    binary_flag = [1,0,0,0,1,1]          # 1 activate imputation algorithm
     imputation_flag = [i for i, impf in enumerate(binary_flag) if impf == 1]
 
     # Load data and introduce missingness
