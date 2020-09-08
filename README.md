@@ -2,19 +2,26 @@
 >Imputation Methods for Missing Data and evaluate imputation methods via sate-of-the-art algorithm classification (SOTA).
 
 ## Table of contents
-* [Setup](#setup)
-* [Imputation Methods](#imputation-methods)
-* [Classification Algorithm](#classification-algorithm)
+  - [Setup](#setup)
+  - [Example command](#example-command)
+  - [Imputation Methods](#imputation-methods)
+  - [Classification Algorithm](#classification-algorithm)
+  - [Contact](#contact)
 
 ## Setup
-
+* Python 3.6
+* tensorflow==1.14
+  
 ## Example command
 * Create new datasets with different missing rates or imputed value
 ```bash
 $ python demo_data_imputation.py --from_id 0 --to_id 2 --review_missing_flag True 
 --review_imputed_flag True
 ```
-
+* Using GAIN method for imputation
+```bash
+$ python demo_imputation_GAIN.py --from_id 0 --to_id 2 --fold_size 11 --batch_size 32 --hint_rate 0.9 --alpha 100 --iterations 10000
+```
 ## Imputation Methods
 Add many imputation methods about project. List of some imputation methods:
 * SimpleImputer(strategy = "mean")
@@ -23,6 +30,7 @@ Add many imputation methods about project. List of some imputation methods:
 * SimpleImputer(strategy = "constant")
 * K-Nearest Neighbor Imputation
 * Multiple Imputation by Chained Equations(MICE)
+* Generative Adversarial Imputation Networks (GAIN)
 
 ## Classification Algorithm
 Some algorithms have been used to evaluate the accuracy of the methods imputed.
@@ -30,7 +38,6 @@ Some algorithms have been used to evaluate the accuracy of the methods imputed.
 * RandomForestClassifier(n_estimators=200)
 * XGBClassifier(n_estimators=200)
 * DecisionTreeClassifier()
-
 
 ## Contact
 Created by [@HieuVu](https://github.com/mrtrunghieu1) - feel free to contact me!

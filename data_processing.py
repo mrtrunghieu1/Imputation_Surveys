@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 #My Library
-from util import check_exist_folder
+from utils import check_exist_folder
 
 '''Begin start code Python'''
 def K_Fold_cross_validation(kf, X_full, save_folder, file_name, count_fold):
