@@ -13,15 +13,20 @@
 * tensorflow==1.14
 * pytorch
 * pip install dgl==0.4.3
+
 ## Example command
 * Create new datasets with different missing rates or imputed value
 ```bash
 $ python demo_data_imputation.py --from_id 0 --to_id 2 --review_missing_flag True 
 --review_imputed_flag True
 ```
-* Using GAIN method for imputation
+* Using Generative Adversarial Imputation Networks method for imputation
 ```bash
-$ python demo_imputation_GAIN.py --from_id 0 --to_id 2 --fold_size 11 --batch_size 32 --hint_rate 0.9 --alpha 100 --iterations 10000
+$ python demo_GAIN_imputation.py --from_id 0 --to_id 2 --fold_size 11 --batch_size 32 --hint_rate 0.9 --alpha 100 --iterations 10000
+```
+* Using Graph Imputation Neural Networks method for imputation
+```bash
+$ python demo_GINN_imputation.py
 ```
 ## Imputation Methods
 Add many imputation methods about project. List of some imputation methods:
@@ -32,7 +37,7 @@ Add many imputation methods about project. List of some imputation methods:
 * K-Nearest Neighbor Imputation
 * Multiple Imputation by Chained Equations(MICE)
 * Generative Adversarial Imputation Networks (GAIN)
-
+* Graph Imputation Neural Networks (GINN)
 ## Classification Algorithm
 Some algorithms have been used to evaluate the accuracy of the methods imputed.
 * KNeighborsClassifier(n_neighbors=10)
