@@ -1,9 +1,9 @@
 file_list = ['abalone', 'heart', 'tic-tac-toe']
 
-data_folder = "C:\\Users\\Administrator\\Desktop\\Code_Test\\Research\\Data-Imputation-master\\data"
+data_folder = "/Users/AnhVu/Study/Machine_learning/Data/Tran_Val_Test"
 
-data_K_Fold = "C:\\Users\\Administrator\\Desktop\\Code_Test\\Research\\Data-Imputation-master\\data_K_Fold"
+data_K_Fold = "data_K_Fold"
 
-imputed_dataset = "C:\\Users\\Administrator\\Desktop\\Code_Test\\Research\\Data-Imputation-master\\imputed_dataset"
+imputed_dataset = "imputed_dataset"
 
-result_path = "C:\\Users\\Administrator\\Desktop\\Code_Test\\Research\\Data-Imputation-master\\result"
+result_path = "result"
