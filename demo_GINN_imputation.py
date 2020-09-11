@@ -82,7 +82,6 @@ def main(args):
 
                 scaler_test = preprocessing.MinMaxScaler()
                 oh_data_test = scaler_test.fit_transform(oh_data_test)
-
 #Now we are ready to impute the missing values on the training set!
                 imputer_train = GINN(
                     oh_data_train,
