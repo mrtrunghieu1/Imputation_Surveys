@@ -5,4 +5,7 @@ __pycache__
 imputed_dataset
 # jupyter_notebook
 docs
-
+.vscode
+util.py
+docs
+ginn.pth
