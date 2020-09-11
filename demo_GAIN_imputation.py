@@ -1,7 +1,8 @@
 '''Main function impute with Generative Adversarial Imputation Networks (GAIN)'''
 
-#Necessary packages
+# Necessary packages
 import sys
+
 sys.path.append("..")
 import datetime
 import csv
@@ -9,12 +10,14 @@ import numpy as np
 import os
 import argparse
 
-#My packages
+# My packages
 from data_helper import file_list, data_K_Fold, imputed_dataset
 from gain import gain
 from utils import csv_reader, write_file
 
 '''Begin start code Python'''
+
+
 def main(args):
     '''Main function for imputed with GAIN
 
@@ -33,7 +36,7 @@ def main(args):
     '''
 
     # Input parameters
-    from_id = args.from_id 
+    from_id = args.from_id
     to_id = args.to_id
     fold_size = args.fold_size
 
@@ -51,19 +54,20 @@ def main(args):
         print(datetime.datetime.now(), "File {}: {}".format(i_file, file_name))
         for i in range(1, fold_size):
             for missingness in missingness_flag:
-                (D_miss_train, D_miss_test) = csv_reader(data_K_Fold, file_name, i, method='data_missing', missingness=missingness)
+                (D_miss_train, D_miss_test) = csv_reader(data_K_Fold, file_name, i, method='data_missing',
+                                                         missingness=missingness)
                 # Impute missing data
                 imputed_train_D = gain(D_miss_train, gain_parameters)
                 imputed_test_D = gain(D_miss_test, gain_parameters)
                 imputed_path = os.path.join(imputed_dataset, file_name)
                 write_file(imputed_train_D, imputed_test_D, imputed_path, 'GAIN', missingness, i)
 
+
 if __name__ == "__main__":
-    
     # Inputs for the main function
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--from_id', 
+        '--from_id',
         help='start index to file list',
         default=0,
         type=int
@@ -100,7 +104,7 @@ if __name__ == "__main__":
         help='number of training interations',
         default=10000,
         type=int)
-    
+
     args = parser.parse_args()
 
     # Calls main function

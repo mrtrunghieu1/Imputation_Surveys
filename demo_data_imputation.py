@@ -18,6 +18,7 @@ from data_processing import K_Fold_cross_validation, missing_data_generation
 from data_imputation import imputation_method
 from train import model_prediction
 
+
 def main(args):
     '''Main function for prepare processing data
     
@@ -36,13 +37,13 @@ def main(args):
     review_imputed_flag = args.review_imputed_flag
 
     # Parameters
-    from_id = args.from_id 
+    from_id = args.from_id
     to_id = args.to_id
     n_iterations = args.n_iterations
-    fold_size = 2*args.n_iterations + 1 # fold_size start from index 1 
+    fold_size = 2 * args.n_iterations + 1  # fold_size start from index 1
     random.seed(0)
     missingness_flag = [0, 10, 20, 30, 40, 50]  # t% missing data  
-    binary_flag = [1,0,0,0,1,1]          # 1 activate imputation algorithm
+    binary_flag = [1, 0, 0, 0, 1, 1]  # 1 activate imputation algorithm
     imputation_flag = [i for i, impf in enumerate(binary_flag) if impf == 1]
 
     # Load data and introduce missingness
@@ -56,13 +57,13 @@ def main(args):
             D_val = np.loadtxt(data_folder + '/val/' + file_name + '_val.dat', delimiter=',')
             D_test = np.loadtxt(data_folder + '/test/' + file_name + '_test.dat', delimiter=',')
 
-            X_full = np.concatenate((D_train, D_val, D_test), axis = 0)
+            X_full = np.concatenate((D_train, D_val, D_test), axis=0)
 
             # K-Fold Cross Validation approach first time
-            kf_1 = KFold(n_splits = n_iterations, shuffle = True)
+            kf_1 = KFold(n_splits=n_iterations, shuffle=True)
             kf_1.split(X_full)
             # K-Fold Cross Validation approach second time
-            kf_2 = KFold(n_splits = n_iterations, shuffle = True)
+            kf_2 = KFold(n_splits=n_iterations, shuffle=True)
             kf_2.split(X_full)
             # Save file csv train(i)-test(i) i=<1, iterations>
             K_Fold_cross_validation(kf_1, X_full, data_K_Fold, file_name, 0)
@@ -76,24 +77,25 @@ def main(args):
                     D_train_missing = missing_data_generation(D_train, missingness)
                     D_test_missing = missing_data_generation(D_test, missingness)
                     write_file(D_train_missing, D_test_missing, data_K_Fold, file_name, missingness, i)
-            
 
         # Loading data processed and imputed dataset
         if review_imputed_flag:
             for i in tqdm(range(1, fold_size)):
                 for missingness in missingness_flag:
-                    (D_missing_train, D_missing_test) = csv_reader(data_K_Fold, file_name, i, method='data_missing', missingness=missingness)
+                    (D_missing_train, D_missing_test) = csv_reader(data_K_Fold, file_name, i, method='data_missing',
+                                                                   missingness=missingness)
                     for imp_flag in imputation_flag:
-                        imputed_train, imputed_test, imp_name = imputation_method(D_missing_train, D_missing_test, imp_flag, missingness)
+                        imputed_train, imputed_test, imp_name = imputation_method(D_missing_train, D_missing_test,
+                                                                                  imp_flag, missingness)
                         imputation_path = os.path.join(file_name, imp_name)
                         write_file(imputed_train, imputed_test, imputed_dataset, imputation_path, missingness, i)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     # Inputs for the main function
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--from_id', 
+        '--from_id',
         help='start index to file list',
         default=0,
         type=int
@@ -128,4 +130,3 @@ if __name__ == "__main__":
     # Call main function
     main(args)
 # '''Code Finished'''
-
