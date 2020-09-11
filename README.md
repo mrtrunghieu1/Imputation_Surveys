@@ -2,16 +2,17 @@
 >Imputation Methods for Missing Data and evaluate imputation methods via sate-of-the-art algorithm classification (SOTA).
 
 ## Table of contents
-  - [Setup](#setup)
+  - [Enviroments](#Enviroments)
   - [Example command](#example-command)
   - [Imputation Methods](#imputation-methods)
   - [Classification Algorithm](#classification-algorithm)
   - [Contact](#contact)
 
-## Setup
+## Enviroments
 * Python 3.6
 * tensorflow==1.14
-  
+* pytorch
+* pip install dgl==0.4.3
 ## Example command
 * Create new datasets with different missing rates or imputed value
 ```bash

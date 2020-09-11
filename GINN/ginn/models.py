@@ -21,7 +21,7 @@ from dgl import DGLGraph
 import dgl.function as fn
 import torch.nn.functional as F
 import torch.autograd as autograd
-from ginn.utils import proper_onehot, batch_mask
+from GINN.ginn.utils import proper_onehot, batch_mask
 from dgl.data import register_data_args, load_data
 
 

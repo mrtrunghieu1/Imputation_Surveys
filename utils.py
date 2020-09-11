@@ -13,6 +13,7 @@
 (11) write_file: Save result to csv files 
 (12) evaluation_report: Evaluate model via parameters: accuracy, p_macro, r_macro, f1_macro, p_micro, r_micro, f1_micro 
 (13) write_report: Save classification results to json file
+(14) mask_generation: create new mask
 '''
  
 # Necessary packages
@@ -24,6 +25,7 @@ import csv
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import accuracy_score
 import json
+import math
 # My packages
 
 
@@ -317,5 +319,123 @@ def write_report(dict, save_folder, imp_name, missingness, classification_name):
       with open(path, 'w') as outfile:
           json.dump(data, outfile)    
         
+#<14>
+def mask_generation(missing_matrix):
+  '''Create mask from missing data
+  Args:
+    - missing_matrix: data with value missing
+
+  Returns:
+    - (missing matrix ,mask)
+  ''' 
+  data_1d = missing_matrix.flatten()
+  n_data = len(data_1d)
+  mask_1d = np.ones(n_data)
+  
+  nan_id = [i for i, element in enumerate(data_1d) if math.isnan(element)]
+  for i in nan_id:
+      mask_1d[i] = 0
+  
+  mask = mask_1d.reshape(missing_matrix.shape)
+  
+  return missing_matrix, mask
+
+#<15>
+def encode_classes(col):
+  """
+  Args:  
+    - col: categorical vector of any type
+
+  Returns: 
+    - labels: categorical vector of int in range 0-num_classes
+  """
+  classes = set(col)
+  classes_dict = {c: i for i, c in enumerate(classes)}
+  labels = np.array(list(map(classes_dict.get, col)), dtype=np.int32)
+  return labels
+  
+#<16>
+def data2onehot(data, mask, num_cols, cat_cols):
+  """
+  Args:
+      - data: corrupted dataset
+      - mask: mask of the corruption
+      - num_cols: vector contaning indexes of columns having numerical values
+      - cat_cols: vector contaning indexes of columns having categorical values
+
+  Returns:
+      - one-hot encoding of the dataset
+      - one-hot encoding of the corruption mask
+      - mask of the numerical entries of the one-hot dataset
+      - mask of the categorical entries of the one-hot dataset
+      - vector containing start-end idx for each categorical variable
+  """
+  # find most frequent class
+  fill_with = []
+  for col in cat_cols:
+      l = list(data[:, col])
+      fill_with.append(max(set(l), key=l.count))
+
+  # meadian imputation
+  filled_data = data.copy()
+  for i, col in enumerate(cat_cols):
+      filled_data[:, col] = np.where(mask[:, col], filled_data[:, col], fill_with[i])
+
+  for i, col in enumerate(num_cols):
+      filled_data[:, col] = np.where(
+          mask[:, col], filled_data[:, col], np.nanmedian(data[:, col])
+      )
+
+  # encode into 0-N lables
+  for col in cat_cols:
+      filled_data[:, col] = encode_classes(filled_data[:, col])
+
+  num_data = filled_data[:, num_cols]
+  num_mask = mask[:, num_cols]
+  cat_data = filled_data[:, cat_cols]
+  cat_mask = mask[:, cat_cols]
+
+  # onehot encoding for masks and categorical variables
+  onehot_cat = []
+  cat_masks = []
+  for j in range(cat_data.shape[1]):
+      col = cat_data[:, j].astype(int)
+      col2onehot = np.zeros((col.size, col.max() + 1), dtype=float)
+      col2onehot[np.arange(col.size), col] = 1
+      mask2onehot = np.zeros((col.size, col.max() + 1), dtype=float)
+      for i in range(cat_data.shape[0]):
+          if cat_mask[i, j] > 0:
+              mask2onehot[i, :] = 1
+          else:
+              mask2onehot[i, :] = 0
+      onehot_cat.append(col2onehot)
+      cat_masks.append(mask2onehot)
+
+  cat_starting_col = []
+  oh_data = num_data
+  oh_mask = num_mask
+
+  # build the big mask
+  for i in range(len(onehot_cat)):
+      cat_starting_col.append(oh_mask.shape[1])
+
+      oh_data = np.c_[oh_data, onehot_cat[i]]
+      oh_mask = np.c_[oh_mask, cat_masks[i]]
+
+  oh_num_mask = np.zeros(oh_data.shape)
+  oh_cat_mask = np.zeros(oh_data.shape)
+
+  # build numerical mask
+  oh_num_mask[:, range(num_data.shape[1])] = num_mask
+
+  # build categorical mask
+  oh_cat_cols = []
+  for i in range(len(cat_masks)):
+      start = cat_starting_col[i]
+      finish = start + cat_masks[i].shape[1]
+      oh_cat_mask[:, start:finish] = cat_masks[i]
+      oh_cat_cols.append((start, finish))
+
+  return oh_data, oh_mask, oh_num_mask, oh_cat_mask, oh_cat_cols
 
 '''Code Finished'''

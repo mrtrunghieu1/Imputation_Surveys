@@ -1,4 +1,3 @@
-from ginn.core import *
-from ginn import utils
-from ginn import models
-
+from GINN.ginn.core import *
+from GINN.ginn import utils
+from GINN.ginn import models

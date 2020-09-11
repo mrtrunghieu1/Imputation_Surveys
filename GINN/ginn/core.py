@@ -13,6 +13,8 @@
 # limitations under the License.
 # ==============================================================================
 
+import sys
+sys.path.append("..")
 
 import dgl
 import time
@@ -24,8 +26,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.autograd as autograd
 
-from ginn.utils import *
-from ginn.models import *
+from GINN.ginn.utils import *
+from GINN.ginn.models import *
 
 torch.manual_seed(42)
 torch.backends.cudnn.deterministic = True
