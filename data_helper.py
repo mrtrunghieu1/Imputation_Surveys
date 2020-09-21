@@ -1,4 +1,4 @@
-file_list = ['abalone', 'heart', 'tic-tac-toe']
+file_list = ['heart', 'tic-tac-toe', 'abalone']
 
 data_folder = "/Users/AnhVu/Study/Machine_learning/Data/Tran_Val_Test"
 

@@ -7,7 +7,9 @@ Contact: jsyoon0823@gmail.com
 '''
 
 # Necessary packages
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+
+tf.disable_v2_behavior()
 import numpy as np
 from tqdm import tqdm
 
@@ -16,7 +18,7 @@ from utils import xavier_init
 from utils import binary_sampler, uniform_sampler, sample_batch_index
 
 
-def gain(data_x, gain_parameters):
+def gain(data_x, data_test, gain_parameters):
     '''Impute missing values in data_x
 
     Args:
@@ -32,6 +34,7 @@ def gain(data_x, gain_parameters):
     '''
     # Define mask matrix
     data_m = 1 - np.isnan(data_x)
+    data_m_test = 1 - np.isnan(data_test)
 
     # System parameters
     batch_size = gain_parameters['batch_size']
@@ -41,6 +44,7 @@ def gain(data_x, gain_parameters):
 
     # Other parameters
     no, dim = data_x.shape
+    no_test, dim_test = data_test.shape
 
     # Hidden state dimensions
     h_dim = int(dim)
@@ -49,8 +53,12 @@ def gain(data_x, gain_parameters):
     norm_data, norm_parameters = normalization(data_x)
     norm_data_x = np.nan_to_num(norm_data, 0)
 
+    norm_data_t, norm_parameters_test = normalization(data_test)
+    norm_data_test = np.nan_to_num(norm_data_t, 0)
+
     ## GAIN architecture
     # Input placeholders
+    # initial
     # Data vector
     X = tf.placeholder(tf.float32, shape=[None, dim])
     # Mask vector
@@ -160,7 +168,7 @@ def gain(data_x, gain_parameters):
     M_mb = data_m
     X_mb = norm_data_x
     X_mb = M_mb * X_mb + (1 - M_mb) * Z_mb
-
+    # Imputed data train
     imputed_data = sess.run([G_sample], feed_dict={X: X_mb, M: M_mb})[0]
 
     imputed_data = data_m * norm_data_x + (1 - data_m) * imputed_data
@@ -171,4 +179,20 @@ def gain(data_x, gain_parameters):
     # Rounding
     imputed_data = rounding(imputed_data, data_x)
 
-    return imputed_data
+    # Prepare data format
+    Z_mb_test = uniform_sampler(0, 0.01, no_test, dim_test)
+    M_mb_test = data_m_test
+    X_mb_test = norm_data_test
+    X_mb_test = M_mb_test * X_mb_test + (1 - M_mb_test) * Z_mb_test
+
+    # Impute data test
+    imputed_data_test = sess.run([G_sample], feed_dict={X: X_mb_test, M: M_mb_test})[0]
+    imputed_data_test = data_m_test * norm_data_test + (1 - data_m_test) * imputed_data_test
+
+    # Renormalization
+    imputed_data_test = renormalization(imputed_data_test, norm_parameters_test)
+
+    # Rounding
+    imputed_data_test = rounding(imputed_data_test, data_test)
+
+    return imputed_data, imputed_data_test

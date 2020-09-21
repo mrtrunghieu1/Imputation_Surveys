@@ -57,8 +57,8 @@ def main(args):
                 (D_miss_train, D_miss_test) = csv_reader(data_K_Fold, file_name, i, method='data_missing',
                                                          missingness=missingness)
                 # Impute missing data
-                imputed_train_D = gain(D_miss_train, gain_parameters)
-                imputed_test_D = gain(D_miss_test, gain_parameters)
+                imputed_train_D, imputed_test_D = gain(D_miss_train, D_miss_test, gain_parameters)
+                # imputed_test_D = gain(D_miss_test, gain_parameters)
                 imputed_path = os.path.join(imputed_dataset, file_name)
                 write_file(imputed_train_D, imputed_test_D, imputed_path, 'GAIN', missingness, i)
 
@@ -102,6 +102,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--iterations',
         help='number of training interations',
+        # default=3, # Change to small value for faster training
         default=10000,
         type=int)
 
