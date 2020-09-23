@@ -13,7 +13,13 @@
 * tensorflow==1.14
 * pytorch
 * pip install dgl==0.4.3
-
+* How to running GAIN method with GPU:
+```bash
+pip install tensorflow-gpu==1.14.0
+export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+export CUDA_VISIBLE_DEVICES=1  #Choose GPU 1
+```
 ## Example command
 * Create new datasets with different missing rates or imputed value
 ```bash
