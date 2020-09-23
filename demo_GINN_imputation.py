@@ -96,24 +96,26 @@ def main(args):
                     numerical_columns,
                     categorical_columns
                 )
-                # Now we are ready to impute the missing values on the testing set!
-                imputer_test = GINN(
-                    oh_data_test,
-                    oh_mask_test,
-                    oh_num_mask_test,
-                    oh_cat_mask_test,
-                    oh_categorical_columns,
-                    numerical_columns,
-                    categorical_columns
-                )
                 # Transform
                 imputer_train.fit()
                 imputed_train = scaler_train.inverse_transform(imputer_train.transform())
-                imputer_test.fit()
-                imputed_test = scaler_test.inverse_transform(imputer_test.transform())
+                
+                # Impute test
+                imputed_train.add_data(
+                    oh_data_test,
+                    oh_mask_test,
+                    oh_num_mask_test,
+                    oh_cat_mask_test
+                    )
+                
+                imputed_test = imputed_train.transform()
+                imputed_test = scaler_test.inverse_transform(imputed_test[x_train.shape[0]:])
+                
+
                 # Write result
                 imputed_path = os.path.join(imputed_dataset, file_name)
                 write_file(imputed_train, imputed_test, imputed_path, 'GINN', missingness, i)
+
 
 
 if __name__ == "__main__":
