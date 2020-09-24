@@ -34,7 +34,6 @@ def gain(data_x, data_test, gain_parameters):
     '''
     # Define mask matrix
     data_m = 1 - np.isnan(data_x)
-    data_m_test = 1 - np.isnan(data_test)
 
     # System parameters
     batch_size = gain_parameters['batch_size']
@@ -44,7 +43,6 @@ def gain(data_x, data_test, gain_parameters):
 
     # Other parameters
     no, dim = data_x.shape
-    no_test, dim_test = data_test.shape
 
     # Hidden state dimensions
     h_dim = int(dim)
@@ -52,9 +50,6 @@ def gain(data_x, data_test, gain_parameters):
     # Normalization
     norm_data, norm_parameters = normalization(data_x)
     norm_data_x = np.nan_to_num(norm_data, 0)
-
-    norm_data_t, norm_parameters_test = normalization(data_test)
-    norm_data_test = np.nan_to_num(norm_data_t, 0)
 
     ## GAIN architecture
     # Input placeholders
@@ -179,6 +174,19 @@ def gain(data_x, data_test, gain_parameters):
     # Rounding
     imputed_data = rounding(imputed_data, data_x)
 
+    imputed_data_test = gain_test(data_test, sess, G_sample, X, M)
+
+    return imputed_data, imputed_data_test
+
+
+def gain_test(data_test, sess, G_sample, X, M):
+    data_m_test = 1 - np.isnan(data_test)
+
+    no_test, dim_test = data_test.shape
+
+    norm_data_t, norm_parameters_test = normalization(data_test)
+    norm_data_test = np.nan_to_num(norm_data_t, 0)
+
     # Prepare data format
     Z_mb_test = uniform_sampler(0, 0.01, no_test, dim_test)
     M_mb_test = data_m_test
@@ -195,4 +203,4 @@ def gain(data_x, data_test, gain_parameters):
     # Rounding
     imputed_data_test = rounding(imputed_data_test, data_test)
 
-    return imputed_data, imputed_data_test
+    return imputed_data_test
