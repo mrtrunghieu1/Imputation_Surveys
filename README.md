@@ -10,7 +10,7 @@
 
 ## Enviroments
 * Python 3.6
-* tensorflow==1.14
+* tensorflow==1.14   
 * pytorch
 * pip install dgl==0.4.3
 * How to running GAIN method with GPU:
