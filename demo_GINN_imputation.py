@@ -101,14 +101,14 @@ def main(args):
                 imputed_train = scaler_train.inverse_transform(imputer_train.transform())
                 
                 # Impute test
-                imputed_train.add_data(
+                imputer_train.add_data(
                     oh_data_test,
                     oh_mask_test,
                     oh_num_mask_test,
                     oh_cat_mask_test
                     )
                 
-                imputed_test = imputed_train.transform()
+                imputed_test = imputer_train.transform()
                 imputed_test = scaler_test.inverse_transform(imputed_test[x_train.shape[0]:])
                 
 
