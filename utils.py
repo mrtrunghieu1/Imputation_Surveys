@@ -1,4 +1,4 @@
-'''Utility functions for GAIN.
+  '''Utility functions for GAIN.
 
 (1)  normalization: MinMax Normalizer
 (2)  renormalization: Recover the data from normalzied data
