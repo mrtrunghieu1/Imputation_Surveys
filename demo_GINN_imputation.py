@@ -8,7 +8,7 @@ from sklearn import model_selection, preprocessing
 import argparse
 from tqdm import tqdm
 import warnings
-
+import os
 warnings.filterwarnings("ignore")
 # My packages
 from data_helper import file_list, data_K_Fold, dictionary_datasets, imputed_dataset
@@ -96,24 +96,26 @@ def main(args):
                     numerical_columns,
                     categorical_columns
                 )
-                # Now we are ready to impute the missing values on the testing set!
-                imputer_test = GINN(
-                    oh_data_test,
-                    oh_mask_test,
-                    oh_num_mask_test,
-                    oh_cat_mask_test,
-                    oh_categorical_columns,
-                    numerical_columns,
-                    categorical_columns
-                )
                 # Transform
                 imputer_train.fit()
                 imputed_train = scaler_train.inverse_transform(imputer_train.transform())
-                imputer_test.fit()
-                imputed_test = scaler_test.inverse_transform(imputer_test.transform())
+                
+                # Impute test
+                imputer_train.add_data(
+                    oh_data_test,
+                    oh_mask_test,
+                    oh_num_mask_test,
+                    oh_cat_mask_test
+                    )
+                
+                imputed_test = imputer_train.transform()
+                imputed_test = scaler_test.inverse_transform(imputed_test[x_train.shape[0]:])
+                
+
                 # Write result
                 imputed_path = os.path.join(imputed_dataset, file_name)
                 write_file(imputed_train, imputed_test, imputed_path, 'GINN', missingness, i)
+
 
 
 if __name__ == "__main__":
