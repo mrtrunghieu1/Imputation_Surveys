@@ -14,6 +14,12 @@
 (12) evaluation_report: Evaluate model via parameters: accuracy, p_macro, r_macro, f1_macro, p_micro, r_micro, f1_micro 
 (13) write_report: Save classification results to json file
 (14) mask_generation: create new mask
+(15)
+(16)
+# Rebuild contruct GINN
+(17) one_hot_to_indices: 
+(18) inverse_onehot:
+(19) order_by_address:
 '''
 
 # Necessary packages
@@ -459,5 +465,47 @@ def data2onehot(data, mask, num_cols, cat_cols):
 
     return oh_data, oh_mask, oh_num_mask, oh_cat_mask, oh_cat_cols
 
+# <17>
+def one_hot_to_indices(data):
+  """
+  Args:
+    - col: categorical vector of any type
 
+  Returns:
+    - labels: categorical vector of int in range 0-num_classes
+  """
+  indices = []
+  for ele in data:
+      indices.append(list(ele).index(1))
+  return indices
+
+# <18>
+def inverse_onehot(data_shape, data_x, oh_cat_cols):
+  """
+  Args:
+    - col: categorical vector of any type
+
+  Returns:
+    - labels: categorical vector of int in range 0-num_classes
+  """
+  end_idx_num = oh_cat_cols[0][0]
+  D_inverse = data_x[:, :end_idx_num]
+  for start, finish in oh_cat_cols:
+      indices = one_hot_to_indices(data_x[:, start:finish])
+      indices = np.array(indices).reshape(data_shape[0], 1)
+      D_inverse = np.concatenate((D_inverse, indices), axis = 1)
+  return D_inverse
+
+#<19>
+def order_by_address(D_inverse, num_cols, cat_cols):
+  """
+  Args:
+    - col: categorical vector of any type
+
+  Returns:
+    - labels: categorical vector of int in range 0-num_classes
+  """
+  cols = num_cols + cat_cols
+  D_sorted = D_inverse[:, np.argsort(cols)]
+  return D_sorted
 '''Code Finished'''
