@@ -378,7 +378,7 @@ def encode_classes(col):
     classes = set(col)
     classes_dict = {c: i for i, c in enumerate(classes)}
     labels = np.array(list(map(classes_dict.get, col)), dtype=np.int32)
-    return labels
+    return labels, classes_dict
 
 
 # <16>
@@ -403,6 +403,7 @@ def data2onehot(data, mask, num_cols, cat_cols):
         l = list(data[:, col])
         fill_with.append(max(set(l), key=l.count))
 
+
     # meadian imputation
     filled_data = data.copy()
     for i, col in enumerate(cat_cols):
@@ -414,9 +415,11 @@ def data2onehot(data, mask, num_cols, cat_cols):
         )
 
     # encode into 0-N lables
+    classes_dictionary = []
     for col in cat_cols:
-        filled_data[:, col] = encode_classes(filled_data[:, col])
-
+        filled_data[:, col], classes_dict = encode_classes(filled_data[:, col])
+        classes_dictionary.append(classes_dict)
+  
     num_data = filled_data[:, num_cols]
     num_mask = mask[:, num_cols]
     cat_data = filled_data[:, cat_cols]
@@ -463,16 +466,16 @@ def data2onehot(data, mask, num_cols, cat_cols):
         oh_cat_mask[:, start:finish] = cat_masks[i]
         oh_cat_cols.append((start, finish))
 
-    return oh_data, oh_mask, oh_num_mask, oh_cat_mask, oh_cat_cols
+    return oh_data, oh_mask, oh_num_mask, oh_cat_mask, oh_cat_cols, classes_dictionary
 
 # <17>
 def one_hot_to_indices(data):
   """
   Args:
-    - col: categorical vector of any type
+      - data: big data by function data2onehot 
 
   Returns:
-    - labels: categorical vector of int in range 0-num_classes
+      - indices: list of index
   """
   indices = []
   for ele in data:
@@ -480,30 +483,39 @@ def one_hot_to_indices(data):
   return indices
 
 # <18>
-def inverse_onehot(data_shape, data_x, oh_cat_cols):
+def inverse_onehot(data_shape, data_x, oh_cat_cols, classes_dictionary):
   """
   Args:
-    - col: categorical vector of any type
+      - data_shape: size of original data
+      - data_x: big data
+      - oh_cat_cols: start, end index of categorical columns
+      - classes_dictionary: dictionary map values and one hot vector
 
   Returns:
-    - labels: categorical vector of int in range 0-num_classes
+      - D_inverse: matrix inverse onehot
   """
   end_idx_num = oh_cat_cols[0][0]
   D_inverse = data_x[:, :end_idx_num]
-  for start, finish in oh_cat_cols:
+  for i, (start, finish) in enumerate(oh_cat_cols):
+      value_cols = []
       indices = one_hot_to_indices(data_x[:, start:finish])
-      indices = np.array(indices).reshape(data_shape[0], 1)
-      D_inverse = np.concatenate((D_inverse, indices), axis = 1)
+      for idx in indices:
+          value_by_dict = float(list(classes_dictionary[i].keys())[list(classes_dictionary[i].values()).index(idx)])
+          value_cols.append(value_by_dict)
+      value_arr = np.array(value_cols).reshape(data_shape[0], 1)
+      D_inverse = np.concatenate((D_inverse, value_arr), axis = 1)
   return D_inverse
 
 #<19>
 def order_by_address(D_inverse, num_cols, cat_cols):
   """
   Args:
-    - col: categorical vector of any type
+      - D_inverse: matrix inverse onehot
+      - num_cols: numerical vector of any type
+      - cat_cols: categorical vector of any type
 
   Returns:
-    - labels: categorical vector of int in range 0-num_classes
+      - D_sorted: order columns of data
   """
   cols = num_cols + cat_cols
   D_sorted = D_inverse[:, np.argsort(cols)]

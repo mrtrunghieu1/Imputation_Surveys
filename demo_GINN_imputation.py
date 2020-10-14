@@ -35,7 +35,7 @@ def main(args):
     fold_size = args.fold_size
 
     # Initial parameters
-    missingness_flag = [0, 10, 20, 30, 40, 50]  # t% missing data  
+    missingness_flag = [0, 10, 20, 30, 40, 50]  # t% missing data
     seed = 42
 
     # Main program
@@ -65,9 +65,9 @@ def main(args):
                 # plus the new columns for the categorical variables with their one-hot range.
                 numerical_columns = dictionary_datasets['{}'.format(file_name)]['numerical']
                 categorical_columns = dictionary_datasets['{}'.format(file_name)]['categorical']
-                [oh_data, oh_mask, oh_numerical_mask, oh_categorical_mask, oh_categorical_columns] = data2onehot(
+                [oh_data, oh_mask, oh_numerical_mask, oh_categorical_mask, oh_categorical_columns, classes_dictionary] = data2onehot(
                     np.r_[cx_train, cx_test], np.r_[mask_train, mask_test], numerical_columns, categorical_columns)
-                print("oh_categorical_columns:",oh_categorical_columns)
+
                 # We scale the features with a min max scaler that will preserve the one-hot encoding
                 oh_data_train = oh_data[:x_train.shape[0], :]
                 oh_data_test = oh_data[x_train.shape[0]:, :]
@@ -96,11 +96,10 @@ def main(args):
                     numerical_columns,
                     categorical_columns
                 )
-                # print("oh_categorical_columns:",oh_categorical_columns)
                 # Transform
                 imputer_train.fit(epochs=1)
                 imputed_train = scaler_train.inverse_transform(imputer_train.transform())
-                print("imputed_train:",imputed_train[0])
+
                 # Impute test
                 imputer_train.add_data(
                     oh_data_test,
@@ -116,15 +115,15 @@ def main(args):
                 # Rebuild construct matrix
                 if categorical_columns != []:
                     # Rebuild train
-                    D_inverse_tr = inverse_onehot(cx_train.shape, imputed_train, oh_categorical_columns)
-                    D_order_train = order_by_address(D_inverse_tr, num_cols=numerical_columns, cat_cols=categorical_columns)
+                    D_inverse_tr = inverse_onehot(cx_train.shape, imputed_train, oh_categorical_columns, classes_dictionary)
+                    imputed_train = order_by_address(D_inverse_tr, num_cols=numerical_columns, cat_cols=categorical_columns)
                     # Rebuild test
-                    D_inverse_te = inverse_onehot(cx_test.shape, imputed_test, oh_categorical_columns)
-                    D_order_test = order_by_address(D_inverse_te, num_cols=numerical_columns, cat_cols=categorical_columns)
+                    D_inverse_te = inverse_onehot(cx_test.shape, imputed_test, oh_categorical_columns, classes_dictionary)
+                    imputed_test = order_by_address(D_inverse_te, num_cols=numerical_columns, cat_cols=categorical_columns)
                 # print("===========",D_order_train[0])
                 # Write result
                 imputed_path = os.path.join(imputed_dataset, file_name)
-                write_file(D_order_train, D_order_test, imputed_path, 'GINN', missingness, i)
+                write_file(imputed_train, imputed_test, imputed_path, 'GINN', missingness, i)
 
 
 
