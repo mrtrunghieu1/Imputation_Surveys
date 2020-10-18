@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore")
 from data_helper import file_list, data_K_Fold, dictionary_datasets, imputed_dataset
 from utils import csv_reader, mask_generation, data2onehot, write_file
 from GINN.ginn.core import GINN
-from utils import inverse_onehot, order_by_address
+from utils import inverse_onehot, order_by_address, check_approximation
 '''Begin start code Python'''
 
 
@@ -120,10 +120,12 @@ def main(args):
                     # Rebuild test
                     D_inverse_te = inverse_onehot(cx_test.shape, imputed_test, oh_categorical_columns, classes_dictionary)
                     imputed_test = order_by_address(D_inverse_te, num_cols=numerical_columns, cat_cols=categorical_columns)
-                # print("===========",D_order_train[0])
+                # Check the approximation of each element
+                imputed_train_checked = check_approximation(imputed_train, cx_train)
+                imputed_test_checked = check_approximation(imputed_test, cx_test)
                 # Write result
                 imputed_path = os.path.join(imputed_dataset, file_name)
-                write_file(imputed_train, imputed_test, imputed_path, 'GINN', missingness, i)
+                write_file(imputed_train_checked, imputed_test_checked, imputed_path, 'GINN', missingness, i)
 
 
 

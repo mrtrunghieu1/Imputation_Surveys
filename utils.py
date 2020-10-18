@@ -14,12 +14,13 @@
 (12) evaluation_report: Evaluate model via parameters: accuracy, p_macro, r_macro, f1_macro, p_micro, r_micro, f1_micro 
 (13) write_report: Save classification results to json file
 (14) mask_generation: create new mask
-(15)
-(16)
+(15) encode_classes: encoder categorical classes
+(16) data2onehot: build big_data
 # Rebuild contruct GINN
-(17) one_hot_to_indices: 
-(18) inverse_onehot:
-(19) order_by_address:
+(17) one_hot_to_indices: index of big_data
+(18) inverse_onehot: decoder big_data to data
+(19) order_by_address: order data by index
+(20) check_approximation: Check the error of each element
 '''
 
 # Necessary packages
@@ -520,4 +521,24 @@ def order_by_address(D_inverse, num_cols, cat_cols):
   cols = num_cols + cat_cols
   D_sorted = D_inverse[:, np.argsort(cols)]
   return D_sorted
+
+#<20>
+def check_approximation(imputed_data, original_data):
+  """ 
+  Args:
+      - imputed_data: imputed for data
+      - original_data: original data with missingness
+
+  Returns:
+      - imputed_data_copy: data not approximation
+  """
+  imputed_data_copy = np.copy(imputed_data)
+  for i in range(imputed_data_copy.shape[0]):
+      for j in range(imputed_data_copy.shape[1]):
+          if math.isnan(original_data[i][j]) is not True:
+              if abs(imputed_data_copy[i][j] - original_data[i][j]) > 0.01:
+                  raise Exception("Reconstruct incorrectly!!!")
+              else:
+                  imputed_data_copy[i][j] = original_data[i][j]
+  return imputed_data_copy
 '''Code Finished'''
