@@ -15,9 +15,8 @@ from data_helper import file_list, data_K_Fold, dictionary_datasets, imputed_dat
 from utils import csv_reader, mask_generation, data2onehot, write_file
 from GINN.ginn.core import GINN
 from utils import inverse_onehot, order_by_address, check_approximation
-'''Begin start code Python'''
 
-
+'''Start code Python'''
 def main(args):
     '''Main function for imputed with GINN
 
