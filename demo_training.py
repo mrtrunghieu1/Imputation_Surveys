@@ -47,8 +47,7 @@ def main(args):
                     dict_eval = {'accuracy': [], 'p_macro': [], 'r_macro': [], 'f1_macro': [],
                                 'p_micro': [], 'r_micro': [], 'f1_micro': []}
                     for i in range(1, fold_size):
-                        D_train, D_test = csv_reader(file_data_path, name_imputation, i, method='data_missing',
-                                                    missingness=missing)
+                        D_train, D_test = csv_reader(file_data_path, name_imputation, i, method='data_missing', missingness=missing)
 
                         features_D_train = D_train[:, :-1]
                         labels_D_train = D_train[:, -1].astype(np.int32)
